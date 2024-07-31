@@ -13,17 +13,8 @@ if (!defined('WPINC')) {
 }
 
 
-/**
- * Plugin activation hooks
- */
-register_activation_hook(__FILE__, 'wp_todo_sync_activation');
+require_once plugin_dir_path( __FILE__ ) . 'includes/class/class-wp-todo-sync-activator.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class/class-wp-todo-sync-deactivator.php';
 
-function wp_todo_sync_activation() {}
-
-
-/**
- * Plugin deactivation hooks
- */
-register_deactivation_hook(__FILE__, 'wp_todo_sync_deactivation');
-
-function wp_todo_sync_deactivation() {}
+register_activation_hook( __FILE__, array( 'WP_Todo_Sync_Activator', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'WP_Todo_Sync_Deactivator', 'deactivate' ) );
