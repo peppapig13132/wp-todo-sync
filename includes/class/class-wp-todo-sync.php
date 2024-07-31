@@ -1,8 +1,29 @@
 <?php
 
+// Autoload dependencies
+require_once plugin_dir_path(__FILE__) . '../../vendor/autoload.php';
+
+use Psr\Log\LoggerInterface;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 class WP_Todo_Sync {
+  private static $logger;
+
   public static function init() {
+    self::initialize_logger();
     add_action( 'admin_menu', array( __CLASS__, 'add_admin_menu' ) );
+  }
+
+  private static function initialize_logger() {
+    // Ensure that the logs directory exists and is writable
+    $log_dir = __DIR__ . '/../../logs';
+    if (!file_exists($log_dir)) {
+      mkdir($log_dir, 0755, true);
+    }
+
+    self::$logger = new Logger('wp-todo-sync');
+    self::$logger->pushHandler(new StreamHandler($log_dir . '/plugin.log', Logger::DEBUG));
   }
 
   public static function add_admin_menu() {
@@ -92,17 +113,20 @@ class WP_Todo_Sync {
   public static function sync_todos() {
     // Verify nonce
     if (!isset($_POST['sync_todos_nonce_field']) || !wp_verify_nonce($_POST['sync_todos_nonce_field'], 'sync_todos_nonce')) {
+      self::$logger->warning('Nonce verification failed during todos sync.');
       return;
     }
   
     // Fetch data from the API
     $response = wp_remote_get('https://jsonplaceholder.typicode.com/todos');
     if (is_wp_error($response)) {
+      self::$logger->error('Failed to fetch todos from API.', ['error' => $response->get_error_message()]);
       return;
     }
   
     $todos = json_decode(wp_remote_retrieve_body($response), true);
     if (empty($todos)) {
+      self::$logger->info('No todos found in the API response.');
       return;
     }
   
@@ -110,7 +134,7 @@ class WP_Todo_Sync {
     $table_name = $wpdb->prefix . 'todos';
   
     foreach ($todos as $todo) {
-      $wpdb->replace(
+      $result = $wpdb->replace(
         $table_name,
         array(
           'id' => $todo['id'],
@@ -121,6 +145,12 @@ class WP_Todo_Sync {
         ),
         array('%d', '%d', '%d', '%s', '%d')
       );
+
+      if ($result === false) {
+        self::$logger->error('Database insertion failed.', ['todo' => $todo]);
+      }
     }
+
+    self::$logger->info('Todos synced successfully.');
   }
 }
