@@ -1,0 +1,22 @@
+{
+    "name": "wp_todo_sync/wp-todo-sync",
+    "description": "A WordPress plugin for syncing and displaying todos.",
+    "type": "wordpress-plugin",
+    "require": {
+        "psr/log": "^3.0",
+        "monolog/monolog": "^3.7"
+    },
+    "license": "GPL-2.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "WpTodoSync\\WpTodoSync\\": "includes/class/"
+        }
+    },
+    "authors": [
+        {
+            "name": "peppapig13132",
+            "email": "peppapig13132@outlook.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
