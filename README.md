@@ -1,6 +1,8 @@
 # WP Todo Sync
 
-💡This WordPress plugin is the best plugin for your practice.
+A WordPress plugin for syncing and displaying todos.
+This plugin includes third-party API integration, MySQL interaction and shortcode development and Error loging.
+It's the best plugin for your practice.
 
 ## Requirement
 
@@ -15,3 +17,5 @@
 Выполнение: предоставить ссылку на репозиторий (любая платформа git)
 
 Буду ожидать от вас ответ🙂
+
+📆 July 30, 2024
