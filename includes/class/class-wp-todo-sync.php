@@ -13,6 +13,7 @@ class WP_Todo_Sync {
   public static function init() {
     self::initialize_logger();
     add_action( 'admin_menu', array( __CLASS__, 'add_admin_menu' ) );
+    add_shortcode( 'wp_todo_sync_unfinished_tasks', array( __CLASS__, 'display_random_unfinished_tasks' ) );
   }
 
   private static function initialize_logger() {
@@ -152,5 +153,36 @@ class WP_Todo_Sync {
     }
 
     self::$logger->info('Todos synced successfully.');
+  }
+
+  public static function display_random_unfinished_tasks() {
+    global $wpdb;
+  
+    $table_name = $wpdb->prefix . 'todos';
+  
+    // Fetch the last 5 unfinished tasks
+    $unfinished_tasks = $wpdb->get_results(
+      $wpdb->prepare(
+        "SELECT * FROM $table_name WHERE completed = 0 ORDER BY id DESC LIMIT %d", 
+        5
+      )
+    );
+  
+    // Shuffle the results to randomize the order
+    shuffle($unfinished_tasks);
+  
+    // Output the list of tasks
+    ob_start();
+    if (!empty($unfinished_tasks)) {
+      echo '<ul class="wp-todo-sync-unfinished-tasks">';
+      foreach ($unfinished_tasks as $task) {
+        echo '<li>' . esc_html($task->title) . '</li>';
+      }
+      echo '</ul>';
+    } else {
+      echo '<p>No unfinished tasks available.</p>';
+    }
+  
+    return ob_get_clean();
   }
 }
