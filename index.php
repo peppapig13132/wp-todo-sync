@@ -15,6 +15,9 @@ if (!defined('WPINC')) {
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class/class-wp-todo-sync-activator.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class/class-wp-todo-sync-deactivator.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class/class-wp-todo-sync.php';
 
 register_activation_hook( __FILE__, array( 'WP_Todo_Sync_Activator', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'WP_Todo_Sync_Deactivator', 'deactivate' ) );
+
+add_action( 'plugins_loaded', array( 'WP_Todo_Sync', 'init' ) );
