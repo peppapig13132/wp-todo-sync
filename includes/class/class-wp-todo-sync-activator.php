@@ -15,7 +15,8 @@ class WP_Todo_Sync_Activator {
       user_id INT NOT NULL,
       task_id INT NOT NULL,
       title VARCHAR(255) NOT NULL,
-      completed TINYINT(1) DEFAULT 0
+      completed TINYINT(1) DEFAULT 0,
+      UNIQUE (task_id)
     ) $charset_collate;";
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
